@@ -1,0 +1,483 @@
+=================
+= ESPRESSO NEWS =
+=================
+
+ESPResSo 3.3
+============
+
+New user-visible features
+-------------------------
+
+* SHANCHEN: a bicomponent lattice Boltzmann fluid, with support for rigid 
+  boundaries and coupling to particle dynamics.
+
+* ELECTROKINETICS: An algorithm to treat species of ions on a mean-field
+  level. Implementation takes advantage of a GPU.
+
+* MMM1D_GPU: The mmm1d electrostatics algorithm is now available as GPU version.
+
+* Support of P3M on GPU.
+
+* Provide the preliminary Python interface. Configure with
+  --with-python-interface.
+
+* Allow the p3m to dump the mesh in x, y, and z (before it only dumped
+  the mesh in x). This allows for the dumping of the p3m in blockfile
+  format in the case of non-cubic boxes. It will also now be possible
+  to tune the settings of a non-cubic mesh.
+
+* Stomatocyte lb-boundary and constraint implemented.
+
+* MEMD electrostatics can now handle spatially varying dielectrc
+  constants.
+
+* Pore constraint / lbboundary can have a two outer radii now to create nozzles.
+
+* Slitpore constraint and dielectric for IL based supercaps implemented.
+
+* New command time_integration to get the runtime of the integration
+  loop.
+
+* New harmonic well that runs on the GPU.
+
+Known bugs
+----------
+
+* The implementation of dielectric contrasts in conjunction with ELC
+  seems to have an error. Please do not use it if you do not know
+  exactly what you are doing until we have fixe the problem.
+
+User-visible changes
+--------------------
+
+* Added new arguments "recalc_forces" and "reuse_forces" to the
+  command "integrate". These arguments can be used to enforce or
+  suppress the recalculation of the forces at the beginning of the
+  call to "integrate". This is important for doing checkpoints, where
+  the forces have to be stored and reloaded.
+
+* Removed command "invalidate_system".
+
+* Comfixed now works with periodic boundary conditions.
+
+* The pressure contribution due to rigid bodies constructed by means of the 
+  virtual sites relative mechanism is included, both for pressure and stress 
+  tensor. Note that the corresponding contribution for rigid bonds is still 
+  not implemented.
+ 
+* The configure option "--with-myconfig" has been removed. Instead,
+  the configure variable "MYCONFIG" can be set to give the name of a
+  myconfig file.
+
+* Generic LJ can now be turned into a soft potential.
+
+* Renamed torque to torque_{lab,body}, improved torque handling in
+  blockfiles.  Clearer distinction between the reference frames for
+  torque and angular momentum.
+
+* Lattice-Boltzmann now has a additional 3-point coupling scheme.
+
+* The noise type in thermalized Lattice-Boltzmann is now selectable via Tcl.
+
+* Interaction with a wall can be restricted to the outside.
+
+* Removed compiler switch GRANDCANONICAL.
+
+* Removed outdated ADRESS code.
+
+* external_potential tabulated to include arbitrary potentials applied to all 
+  particles.
+
+* thermostat inter_dpd ignore_fixed_particles 1 allows the user to swith on DPD 
+  with fixed particles.
+
+* New Observable concept that includes running averages and other observables 
+  with history
+
+
+Changes visible for developers
+------------------------------
+
+* Feature GHOSTS_HAVE_BONDS allows for ghost particles to also store the bonds.
+
+* The code has been switched to using a C++ compiler.
+
+* Introduced object-oriented interfaces for forces/constraints/external fields: 
+  SystemInterface and Actor. 
+
+* Improved Lattice structure
+
+* Generic TclAppend function
+
+ESPResSo 3.2
+============
+
+New user-visible features
+-------------------------
+
+* Added a new immersed boundaries code that allows to simulate
+  extended, flexible objects in conjunction with the LB code.  This is
+  described in the UG in the new chapter "Object-in-fluid".
+
+* The script tools/blockfile2vtf.tcl can be used to convert ESPResSo
+  blockfiles into VTF files.
+
+* Two new short-ranged nonbonded potentials have been added:
+
+  * HAT: the classical conservative DPD interaction, a simple force
+    ramp.
+
+  * GAUSSIAN: A Gaussian potential.
+
+* The feature CATALYTIC_REACTIONS and the command "reaction" model a
+  simple chemical reaction: when a particle of the reactant type comes
+  into the vincinity of a particle of the catalysator type, the
+  reactant is transformed into a particle of the product type.
+
+* The feature GHMC implements a generalized hybrid Monte-Carlo
+  thermostat.
+
+* The feature GRANDCANONICAL provided functions to simplify grandcanonical
+  simulations in espresso. To that end it provides functions to find and
+  delete random particles of a certain type.
+
+* Added new feature ROTATION_PER_PARTICLE that allows to choose
+  whether a particle has rotational degrees of freedom or not.
+
+User-visible changes
+--------------------
+
+* Removed non-working tools and samples.
+
+* Bond angle potentials are now defined on the Tcl-level instead of on
+  the feature-level, i.e. to choose the type of the bond-angle
+  potential, you should use the corresponding Tcl command instead of a
+  feature. To allow for any bond angle potential, activate the feature
+  BOND_ANGLE.
+
+* We have removed the forcecaps for the different interaction
+  types. Instead, there is now a single global forcecap, plus it is
+  possible to define individual forcecaps on a particle pair level.
+
+* By default, CUDA is now automatically detected and activated when it
+  is there and usable.
+
+* The functions for galilei transformations have been overhauled and
+  renamed. The old functions are deprecated.
+
+* DPD (as thermostat) now works without any other interaction, so a pure
+  DPD fluid is possible.
+
+ESPResSo 3.1.2
+==============
+
+* Fixed bugs #38475, #37725, #36434.
+
+* Added workaround for bug in VTF reader plugin of VMD 1.9.1 that made
+  all particles look the same when ELECTROSTATICS is turned on.
+
+* Added Tcl-scripts of the tutorials to the distribution.
+
+* Added forgotten part of the UG on the correlators.
+
+* Removed buggy readline code tclline.tcl. Fixes #36432.
+
+* Removed Ewald code from ESPResSo that never worked and was never
+  documented.
+
+ESPResSo 3.1.1
+==============
+
+* The Espresso binary now outputs the header to STDERR instead of STDOUT.
+
+* Fixed bugs #36431, #37120, #37214, #37374, #37306, #35767.
+
+* Fixed generation of myconfig-sample.h.
+
+* Fixed AdResS example.
+
+* Added new logo.
+
+* The documentation sources are now left out of the distribution
+  package, only the PDF files are included. This fixes problems when
+  calling "make doc" in a distribution package (#35958).
+
+ESPResSo 3.1.0
+==============
+
+New user-visible features
+-------------------------
+
+* While so far, observables were typically computed and stored on the
+  Tcl-level after a call to "integrate", a new observable concept now
+  allows to compute observables while the C-core is running. This is
+  particularly useful for observables that have to be computed very
+  frequently, as for example in the case of time-correlations
+  (e.g. the RMSD of particles).
+  The new concept is documented in the User's Guide in Section 8.4
+  ("Correlations and observables").
+
+* The new feature COLLISION_DETECTION allows to dynamically add new
+  bonds between colliding particles.
+
+* Added new feature LANGEVIN_PER_PARTICLE that allows to set the
+  Langevin parameters temperature and gamma per particle.
+
+* Added new constraint and LB boundary condition "rhomboid".
+
+* Lattice-Boltzmann:
+
+  * nonzero velocity boundary conditions are available
+
+  * forces on boundaries can be calculated
+
+  * wall constraints work
+
+* Added basic tutorial on Lennard-Jones liquid, made second tutorial
+  (simple charged systems) better available (all in doc/tutorials/)
+
+* The ICC* algorithm is now ready to use. It is used with the command
+  "iccp3m" and allows to take into account dielectric boundaries of
+  arbitrary shape. The command "dielectric" allows to create the
+  boundaries in a similar fashion as constraints and lbboundaries.
+
+User-visible changes
+--------------------
+
+* The blockfile C-library has been removed. In theory, there was a
+  library usable from C that could be used to read and write
+  blockfiles. Since several years, it was broken, so apparently it
+  wasn't used anyway.
+
+* The NPT barostat now works in many more combinations of
+  algorithms than so far (e.g. MMM2D, ELC, ...)
+
+* The Lattice-Boltzmann CPU implementation now works when Verlet lists
+  are used.
+
+* Removed unneccessary overhead of neutral particles in simulations
+  with P3M.
+
+* Removed unneccessary overhead of activated but ununsed interaction
+  features.
+
+* Some changes in the Verlet list construction yield a performance
+  gain of up to 90% in systems where the interaction ranges differ
+  significantly, or where some particle types do not interact at all
+  (phantom particles).
+
+* Renamed Coulomb method maggs to MEMD (inter coulomb maggs => inter
+  coulomb memd).
+
+Changes visible for developers
+------------------------------
+
+* code_info does now not only show the main package version, but also
+  the exact git commit id and whether or not the code was modified
+  ("dirty"). Also, the distribution package provides this information.
+
+* The various features are now defined in the file
+  src/features.def. From this file, a couple of Python scripts
+  automatically generate myconfig-sample.h and what was config.h and
+  config.c. Also, this allows to check whether all features are
+  documented, tested and defined.
+  Note that due to this change, ESPResSo development now requires
+  Python.
+
+* The domain decomposition, P3M, LB and MEMD now use MPI cartesian
+  communicators. This will hopefully speed up the simulations on some
+  platforms.
+
+* Split interaction code into .c and .h files.
+
+* Split off the Tcl interface (into src/tcl/) from the C core code (in
+  src/)
+
+* Added ESPResSo logos, cover issue images, and some other material to
+  the repo (doc/).
+
+* Started new LaTeX-Developer's Guide (DG), and moved all "Related
+  pages" from the doxygen docs. The doxygen stuff still exists and is
+  available via doc/doxygen/.
+
+ESPResSo 3.0.2
+==============
+
+* Fixed features ADRESS and VIRTUAL_SITES_COM that did not work for a while.
+
+* Fixed bugs #33489, #34238.
+
+* Fixed a few bugs that were never reported via the bug tracker,
+  mainly in the documentation.
+
+ESPResSo 3.0.1
+==============
+
+* Fixed bugs #33375,#33376,#32005
+
+* Fixed a few bugs that were never reported via the bug tracker.
+
+ESPResSo 3.0.0
+===============
+
+User-visible changes
+--------------------
+
+* The Lattice-Boltzmann implementation in ESPResSo has been
+  significantly overhauled and it has been documented for the first
+  time.
+
+* A CUDA implementation for NVIDIA GPUs of the Lattice-Boltzmann
+  algorithm is included.
+
+* The Maggs algorithm (or Maxwell Equation Molecular Dynamics, MEMD)
+  for computing electrostatic interactions has been included and
+  documented. The algorithm is a fast and scalable alternative for P3M
+  or other such algorithms.
+
+* The P3M algorithm for electrostatic and dipolar (magnetostatic)
+  interactions has been extended.
+
+  * Electrostatic P3M allows for non-cubic boxes.
+
+  * The electrostatic P3M pressure tensor is computed correctly now.
+
+  * Dipolar P3M has been parallelized (electrostatics P3M was
+    parallelized already!)
+
+  * The MDLC method (magnetic dipolar layer correction) has been
+    parallelized.
+
+* The virtual sites feature has been significantly extended and
+  documented.  Virtual sites are particles that can interact with
+  other particles but whose positions are not integrated via the
+  normal integrator.  Instead, the positions are determined by the
+  positions of other, "real" particles.  Virtual sites can either be
+  set into the center of mass of a set of real particles (feature
+  VIRTUAL_SITES_COM), or it can be set to an arbitrary location
+  relative to another particle (VIRTUAL_SITES_RELATIVE).  This allows
+  to create rigid structures within ESPResSo.
+
+* The User's Guide has been significantly updated and extended.
+
+* Some constraints can now be made penetrable and reflecting.
+
+* "Espresso" is now the actual binary instead of a wrapper shell
+  script that automatically calls MPI. This means that it is necessary
+  to call "mpiexec" or "mpirun" youself to run ESPResSo in an MPI
+  environment.
+
+* The directory where the scripts are installed is now compiled into
+  the binary, i.e. it is not necessary anymore to set the environment
+  variable ESPRESSO_SCRIPTS. Still, it will heed the environment
+  variable if it is set.
+
+* The build system has been overhauled and simplified.
+
+  * Running "make check" will run the testsuite with a single number
+    of processors, which gives a significant speedup. "configure" will
+    try to determine the available number of CPUs/cores. If it can't,
+    it will use 1 by default.
+
+  * MPI recognition has changed. The build system first needs to find
+    out how to compile an MPI binary. If it doesn't find out
+    automatically, you can help it by setting the variable MPICC or
+    LDFLAGS correctly.  Furthermore, it needs to know how to run an MPI
+    binary.  If "mpiexec" is available, everything is fine.  If it is
+    not, you can provide a script "mympiexec.sh" that behaves like
+    mpiexec.
+
+  * So far, when you built in the source directory, all files ended up
+    in a subdirectory "obj.XXX", where XXX was some description of the
+    processor you used.  This non-standard behavior has been removed.
+    Instead, the files are generated directly in the source directory
+    when compiling there.
+    If you want to compile several binaries from a single source
+    directory, you can use build directories as described in the
+    User's Guide.
+
+* A number of functions have been deprecated, as they are not
+  maintained anymore. Plase do not use them in your code and replace
+  them with appropriate alternatives if you use them in your code!
+  The following functions are deprecated:
+  checkpoint_*, polyBlock*, calcOb*, calcObs*, plot*, polyConf*
+
+* FFTW2 is no longer supported.
+
+Organizational changes
+----------------------
+
+* The home page of ESPReSso has been relocated to
+
+    http://espressomd.org
+
+* The mailing list and source code repository have been moved to GNU
+  Savannah. Furthermore, we have a bugtracker now. The development
+  homepage is 
+
+    https://savannah.nongnu.org/projects/espressomd
+
+* The maintenance of ESPResSo has been relocated from Torsten Stühn
+  from the Max-Planck-Institute for Polymer Research at Mainz to 
+
+    Olaf Lenz <olenz@icp.uni-stuttgart.de>
+
+  from the Institute for Computational Physics at Stuttgart University.
+
+* The old "ESPResSo license" was removed, as it was not really a
+  license, but only contained additions that were either non-binding
+  or already contained in the GPL.
+
+* The license was upgraded to GPLv3.
+
+* The package was adapted to GNU standards. RELEASE_NOTES was moved
+  aside to old/RELEASE_NOTES, instead, we will have the files
+  ChangeLog and NEWS. NEWS will contain a description of the most
+  noteworthy changes since the last release.
+
+Changes visible for developers
+------------------------------
+
+* The source code repository has been moved from CVS to git, and it
+  has moved to GNU Savannah (see above) and github. The main
+  development code repository is
+
+    https://github.com/espressomd/espresso
+
+* We have an automated build server (Jenkins) at 
+
+    http://espressomd.org/jenkins/ 
+
+  that automatically builds and checks the ESPResSo package whenever
+  new code is pushed to the main development repository.  Every night,
+  a number of additional tests are performed
+
+* The .c/.h/.cu source files have been moved to the subdirectory
+  src/. The Espresso binary is still placed in the top-level build
+  directory. myconfig.h may be placed eitther in the src/ or top-level
+  dirs.
+
+* The automatically generated files configure and Makefile.in are not
+  part of the repository anymore.  A developer can generate them using
+  the command "bootstrap.sh", which requires the GNU autotools
+  (autoconf and automake).
+
+* All functions that represent the interface to Tcl should follow the
+  same naming conventions. These are described here:
+
+    git log 3d4d6f31655a8d96e47c8f80e10f27f6b764f8df
+
+* Adding a new MPI function to communication.c has been significantly
+  simplified. It is enough to add the function in the C file at a
+  single location.
+
+========================================================================
+For older changes to ESPResSo, see ./old/RELEASE_NOTES.
+
+========================================================================
+Copyright (C) 2010,2011,2012,2013,2014 The ESPResSo project
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
